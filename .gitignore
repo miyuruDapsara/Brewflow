@@ -1,0 +1,5 @@
+# Ignore Cursor rules and internal documentation from git tracking
+.cursor/
+docs/
+node_modules/
+.env
