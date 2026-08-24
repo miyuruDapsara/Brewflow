@@ -7,6 +7,8 @@ const { apiRateLimiter } = require('./middleware/rateLimit');
 const notFoundMiddleware = require('./middleware/notFound');
 const errorMiddleware = require('./middleware/error');
 const authRoutes = require('./modules/auth/auth.routes');
+const categoryRoutes = require('./modules/categories/category.routes');
+const productRoutes = require('./modules/products/product.routes');
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

@@ -1,0 +1,14 @@
+const CATEGORY_TYPES = {
+  BEVERAGE: 'BEVERAGE',
+  FOOD: 'FOOD',
+  CAKE: 'CAKE',
+  BAKED_ITEM: 'BAKED_ITEM',
+  COMBO: 'COMBO',
+};
+
+const CATEGORY_TYPE_VALUES = Object.values(CATEGORY_TYPES);
+
+module.exports = {
+  CATEGORY_TYPES,
+  CATEGORY_TYPE_VALUES,
+};

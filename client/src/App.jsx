@@ -1,10 +1,13 @@
-function App() {
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import AppRoutes from './routes/AppRoutes';
+
+export default function App() {
   return (
-    <main>
-      <h1>BrewFlow</h1>
-      <p>Café ordering and operations — foundation scaffold.</p>
-    </main>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
-
-export default App;

@@ -4,9 +4,9 @@ Full-stack café ordering and operations management system.
 
 ## Stack
 
-- **Client:** React + JavaScript + Vite
+- **Client:** React + JavaScript + Vite + Tailwind
 - **Server:** Node.js + Express
-- **Database:** MongoDB (added in later phases)
+- **Database:** MongoDB Atlas
 
 ## Getting started
 
@@ -29,6 +29,7 @@ npm run dev:server
 
 ```bash
 npm test
+npm test -w client
 ```
 
 ### Format
