@@ -9,8 +9,10 @@ export default function Input({
   autoComplete,
 }) {
   return (
-    <label className="block space-y-1 text-sm" htmlFor={id}>
-      {label ? <span className="font-medium text-stone-700">{label}</span> : null}
+    <label className="block space-y-1.5 text-sm" htmlFor={id}>
+      {label ? (
+        <span className="font-medium text-[var(--bf-muted)]">{label}</span>
+      ) : null}
       <input
         id={id}
         type={type}
@@ -19,7 +21,7 @@ export default function Input({
         placeholder={placeholder}
         required={required}
         autoComplete={autoComplete}
-        className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-stone-900 outline-none ring-amber-700 focus:ring-2"
+        className="w-full rounded-xl border border-[var(--bf-border)] bg-white px-3 py-2.5 text-[var(--bf-ink)] placeholder:text-stone-400 outline-none transition focus:border-[var(--bf-accent)] focus:ring-2 focus:ring-[var(--bf-accent)]/20"
       />
     </label>
   );

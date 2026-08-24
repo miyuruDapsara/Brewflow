@@ -2,16 +2,18 @@ import { formatCurrency } from '../../utils/formatCurrency';
 
 export default function CartSummary({ subtotal, itemCount }) {
   return (
-    <div className="rounded-lg bg-amber-50/80 p-4 ring-1 ring-amber-100">
-      <div className="flex items-center justify-between text-sm text-stone-600">
+    <div className="rounded-xl border border-[var(--bf-border)] bg-[#f3ebe0] p-4">
+      <div className="flex items-center justify-between text-sm text-[var(--bf-muted)]">
         <span>Items</span>
         <span>{itemCount}</span>
       </div>
-      <div className="mt-2 flex items-center justify-between text-base font-semibold text-amber-950">
+      <div className="mt-2 flex items-center justify-between text-base font-semibold text-[var(--bf-ink)]">
         <span>Subtotal</span>
-        <span>{formatCurrency(subtotal)}</span>
+        <span className="text-[var(--bf-accent)]">
+          {formatCurrency(subtotal)}
+        </span>
       </div>
-      <p className="mt-2 text-xs text-stone-500">
+      <p className="mt-2 text-xs text-[var(--bf-muted)]">
         Prices shown are estimates. Final total is calculated at checkout.
       </p>
     </div>

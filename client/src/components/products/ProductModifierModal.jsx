@@ -110,9 +110,9 @@ export default function ProductModifierModal({
       onClose={onClose}
       footer={
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-medium text-stone-900">
+          <p className="text-sm font-medium text-[var(--bf-ink)]">
             {formatCurrency(lineTotal)}
-            <span className="ml-2 font-normal text-stone-500">
+            <span className="ml-2 font-normal text-[var(--bf-muted)]">
               ({formatCurrency(unitPrice)} each)
             </span>
           </p>
@@ -123,14 +123,14 @@ export default function ProductModifierModal({
       <div className="space-y-5">
         {groups.map((group) => (
           <fieldset key={group.id} className="space-y-2">
-            <legend className="text-sm font-semibold text-stone-900">
+            <legend className="text-sm font-semibold text-[var(--bf-ink)]">
               {group.name}
               {group.isRequired ? (
-                <span className="ml-2 text-xs font-normal text-amber-800">
+                <span className="ml-2 text-xs font-normal text-[var(--bf-accent)]">
                   Required
                 </span>
               ) : (
-                <span className="ml-2 text-xs font-normal text-stone-500">
+                <span className="ml-2 text-xs font-normal text-[var(--bf-muted)]">
                   Optional
                 </span>
               )}
@@ -146,9 +146,9 @@ export default function ProductModifierModal({
                 return (
                   <label
                     key={option.id}
-                    className="flex cursor-pointer items-center justify-between gap-3 rounded-md border border-stone-200 px-3 py-2 text-sm hover:bg-amber-50/50"
+                    className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--bf-border)] bg-[var(--bf-cream)]/50 px-3 py-2 text-sm transition hover:border-[var(--bf-accent)]/40 hover:bg-[var(--bf-accent-soft)]"
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 text-[var(--bf-ink)]">
                       <input
                         type={inputType}
                         name={`group-${group.id}`}
@@ -157,7 +157,7 @@ export default function ProductModifierModal({
                       />
                       {option.name}
                     </span>
-                    <span className="text-stone-500">
+                    <span className="text-[var(--bf-muted)]">
                       {option.priceAdjustment
                         ? `+${formatCurrency(option.priceAdjustment)}`
                         : 'Included'}
@@ -173,7 +173,7 @@ export default function ProductModifierModal({
         ))}
 
         <label className="block text-sm" htmlFor="modifier-qty">
-          <span className="font-medium text-stone-800">Quantity</span>
+          <span className="font-medium text-[var(--bf-muted)]">Quantity</span>
           <input
             id="modifier-qty"
             type="number"
@@ -183,19 +183,21 @@ export default function ProductModifierModal({
             onChange={(event) =>
               setQuantity(clampQuantity(event.target.value))
             }
-            className="mt-1 w-24 rounded-md border border-stone-300 px-3 py-2 outline-none ring-amber-700 focus:ring-2"
+            className="mt-1 w-24 rounded-lg border border-[var(--bf-border)] bg-white px-3 py-2 text-[var(--bf-ink)] outline-none focus:border-[var(--bf-accent)] focus:ring-2 focus:ring-[var(--bf-accent)]/25"
           />
         </label>
 
         <label className="block text-sm" htmlFor="modifier-notes">
-          <span className="font-medium text-stone-800">Notes (optional)</span>
+          <span className="font-medium text-[var(--bf-muted)]">
+            Notes (optional)
+          </span>
           <textarea
             id="modifier-notes"
             rows={2}
             maxLength={200}
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
-            className="mt-1 w-full rounded-md border border-stone-300 px-3 py-2 outline-none ring-amber-700 focus:ring-2"
+            className="mt-1 w-full rounded-lg border border-[var(--bf-border)] bg-white px-3 py-2 text-[var(--bf-ink)] outline-none focus:border-[var(--bf-accent)] focus:ring-2 focus:ring-[var(--bf-accent)]/25"
             placeholder="e.g. extra hot"
           />
         </label>

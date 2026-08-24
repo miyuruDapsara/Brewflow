@@ -11,13 +11,18 @@ import Menu from '../pages/public/Menu';
 import NotFound from '../pages/public/NotFound';
 import ProductDetails from '../pages/public/ProductDetails';
 import Cart from '../pages/customer/Cart';
+import Checkout from '../pages/customer/Checkout';
+import OrderDetails from '../pages/customer/OrderDetails';
+import OrderHistory from '../pages/customer/OrderHistory';
 import { ROLES } from '../utils/constants';
 
 function ManagerPlaceholder() {
   return (
-    <section className="rounded-lg bg-white/80 p-6 ring-1 ring-stone-200">
-      <h1 className="text-xl font-semibold text-amber-950">Manager area</h1>
-      <p className="mt-2 text-sm text-stone-600">
+    <section className="bf-page bf-glass-strong rounded-2xl p-6">
+      <h1 className="bf-display text-xl font-bold text-[var(--bf-ink)]">
+        Manager area
+      </h1>
+      <p className="mt-2 text-sm text-[var(--bf-muted)]">
         Placeholder route for role checks. Full manager UI comes later.
       </p>
     </section>
@@ -32,6 +37,30 @@ export default function AppRoutes() {
         <Route path="/menu" element={<Menu />} />
         <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <OrderHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetails />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/unauthorized" element={<Unauthorized />} />

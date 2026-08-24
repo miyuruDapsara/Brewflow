@@ -80,12 +80,12 @@ export default function Menu() {
   }, [products, search]);
 
   return (
-    <section className="space-y-6">
+    <section className="bf-page space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-amber-950">
+        <h1 className="bf-display text-3xl font-bold tracking-tight text-[var(--bf-ink)] sm:text-4xl">
           Menu
         </h1>
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-[var(--bf-muted)]">
           Browse drinks and food. Open a product for details and customization
           options.
         </p>

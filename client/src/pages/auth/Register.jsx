@@ -11,19 +11,24 @@ export default function Register() {
   }
 
   return (
-    <section className="mx-auto max-w-md space-y-6">
+    <section className="bf-page mx-auto max-w-md space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-amber-950">Create account</h1>
-        <p className="mt-1 text-sm text-stone-600">
+        <h1 className="bf-display text-2xl font-bold text-[var(--bf-ink)]">
+          Create account
+        </h1>
+        <p className="mt-1 text-sm text-[var(--bf-muted)]">
           Register as a customer to start ordering.
         </p>
       </div>
-      <div className="rounded-lg bg-white/80 p-6 shadow-sm ring-1 ring-stone-200">
+      <div className="bf-glass-strong rounded-2xl p-6">
         <RegisterForm onSuccess={() => navigate('/account', { replace: true })} />
       </div>
-      <p className="text-sm text-stone-600">
+      <p className="text-sm text-[var(--bf-muted)]">
         Already have an account?{' '}
-        <Link to="/login" className="font-medium text-amber-900 underline">
+        <Link
+          to="/login"
+          className="font-medium text-[var(--bf-accent)] underline-offset-4 hover:underline"
+        >
           Log in
         </Link>
       </p>

@@ -1,15 +1,99 @@
 @import 'tailwindcss';
 
+:root {
+  --bf-bg: #f7f1e8;
+  --bf-bg-elevated: #fffaf4;
+  --bf-surface: rgba(255, 252, 247, 0.82);
+  --bf-surface-strong: rgba(255, 255, 255, 0.92);
+  --bf-border: rgba(92, 58, 36, 0.12);
+  --bf-border-subtle: rgba(92, 58, 36, 0.08);
+  --bf-ink: #2a1a12;
+  --bf-muted: #6b5344;
+  --bf-accent: #6f4e37;
+  --bf-accent-warm: #c4783a;
+  --bf-accent-gold: #b8860b;
+  --bf-accent-soft: rgba(111, 78, 55, 0.08);
+  --bf-cream: #f3ebe0;
+  --bf-placeholder: #e8d9c8;
+  --bf-font-display: 'Fraunces', Georgia, serif;
+  --bf-font-body: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  font-family:
-    'Segoe UI',
-    system-ui,
-    -apple-system,
-    sans-serif;
-  color: #2c1810;
-  background:
-    radial-gradient(circle at top left, #f6e7d7 0%, transparent 45%),
-    linear-gradient(180deg, #faf6f1 0%, #f3ebe3 100%);
+  font-family: var(--bf-font-body);
+  color: var(--bf-ink);
+  background-color: var(--bf-bg);
+  background-image:
+    radial-gradient(ellipse 70% 40% at 0% 0%, rgba(196, 120, 58, 0.08), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 10%, rgba(111, 78, 55, 0.06), transparent 50%),
+    linear-gradient(180deg, #faf6f0 0%, #f3ebe0 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(111, 78, 55, 0.2);
+  color: var(--bf-ink);
+}
+
+.bf-display {
+  font-family: var(--bf-font-display);
+}
+
+.bf-glass {
+  background: var(--bf-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--bf-border-subtle);
+  box-shadow: 0 8px 28px rgba(42, 26, 18, 0.06);
+}
+
+.bf-glass-strong {
+  background: var(--bf-surface-strong);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--bf-border);
+  box-shadow: 0 12px 36px rgba(42, 26, 18, 0.08);
+}
+
+.bf-card {
+  background: var(--bf-bg-elevated);
+  border: 1px solid var(--bf-border);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(42, 26, 18, 0.07);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.bf-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(42, 26, 18, 0.1);
+}
+
+.bf-page {
+  animation: bf-fade-up 0.5s ease-out both;
+}
+
+.bf-page-delay {
+  animation: bf-fade-up 0.6s ease-out 0.08s both;
+}
+
+@keyframes bf-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

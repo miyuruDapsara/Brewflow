@@ -11,12 +11,12 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }) {
   );
 
   return (
-    <div className="rounded-lg border border-stone-200 bg-white/80 p-4">
+    <div className="rounded-xl border border-[var(--bf-border)] bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-amber-950">{item.name}</h3>
+          <h3 className="font-semibold text-[var(--bf-ink)]">{item.name}</h3>
           {item.selectedModifiers?.length ? (
-            <ul className="mt-1 space-y-0.5 text-xs text-stone-500">
+            <ul className="mt-1 space-y-0.5 text-xs text-[var(--bf-muted)]">
               {item.selectedModifiers.map((mod) => (
                 <li key={`${mod.groupId}-${mod.optionId}`}>
                   {mod.groupName}: {mod.optionName}
@@ -28,18 +28,18 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }) {
             </ul>
           ) : null}
           {item.notes ? (
-            <p className="mt-1 text-xs italic text-stone-500">
+            <p className="mt-1 text-xs italic text-[var(--bf-muted)]">
               Note: {item.notes}
             </p>
           ) : null}
         </div>
-        <p className="shrink-0 font-medium text-stone-900">
+        <p className="shrink-0 font-medium text-[var(--bf-accent)]">
           {formatCurrency(lineTotal)}
         </p>
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <label className="flex items-center gap-2 text-sm text-stone-700">
+        <label className="flex items-center gap-2 text-sm text-[var(--bf-muted)]">
           Qty
           <input
             type="number"
@@ -49,7 +49,7 @@ export default function CartItem({ item, onUpdateQuantity, onRemove }) {
             onChange={(event) =>
               onUpdateQuantity?.(item.lineId, Number(event.target.value))
             }
-            className="w-16 rounded-md border border-stone-300 px-2 py-1"
+            className="w-16 rounded-lg border border-[var(--bf-border)] px-2 py-1 text-[var(--bf-ink)]"
             aria-label={`Quantity for ${item.name}`}
           />
         </label>

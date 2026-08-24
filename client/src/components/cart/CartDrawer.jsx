@@ -16,17 +16,19 @@ export default function CartDrawer({ open, onClose }) {
     <div className="fixed inset-0 z-40" role="dialog" aria-label="Cart drawer">
       <button
         type="button"
-        className="absolute inset-0 bg-stone-900/40"
+        className="absolute inset-0 bg-[var(--bf-ink)]/40 backdrop-blur-sm"
         aria-label="Close cart"
         onClick={onClose}
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-stone-50 shadow-xl ring-1 ring-stone-200">
-        <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3">
-          <h2 className="text-lg font-semibold text-amber-950">Your cart</h2>
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-[#fffaf4] shadow-2xl ring-1 ring-[var(--bf-border)]">
+        <div className="flex items-center justify-between border-b border-[var(--bf-border)] px-4 py-3">
+          <h2 className="bf-display text-lg font-bold text-[var(--bf-ink)]">
+            Your cart
+          </h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md px-2 py-1 text-sm text-stone-500 hover:bg-stone-100"
+            className="rounded-md px-2 py-1 text-sm text-[var(--bf-muted)] hover:bg-[var(--bf-bg)]"
           >
             Close
           </button>
@@ -50,7 +52,7 @@ export default function CartDrawer({ open, onClose }) {
           )}
         </div>
 
-        <div className="space-y-3 border-t border-stone-200 px-4 py-4">
+        <div className="space-y-3 border-t border-[var(--bf-border)] px-4 py-4">
           <CartSummary subtotal={subtotal} itemCount={itemCount} />
           <Link to="/cart" onClick={onClose} className="block">
             <Button className="w-full">View cart</Button>

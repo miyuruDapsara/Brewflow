@@ -13,19 +13,24 @@ export default function Login() {
   }
 
   return (
-    <section className="mx-auto max-w-md space-y-6">
+    <section className="bf-page mx-auto max-w-md space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-amber-950">Log in</h1>
-        <p className="mt-1 text-sm text-stone-600">
+        <h1 className="bf-display text-2xl font-bold text-[var(--bf-ink)]">
+          Log in
+        </h1>
+        <p className="mt-1 text-sm text-[var(--bf-muted)]">
           Welcome back. Use your BrewFlow account.
         </p>
       </div>
-      <div className="rounded-lg bg-white/80 p-6 shadow-sm ring-1 ring-stone-200">
+      <div className="bf-glass-strong rounded-2xl p-6">
         <LoginForm onSuccess={() => navigate(redirectTo, { replace: true })} />
       </div>
-      <p className="text-sm text-stone-600">
+      <p className="text-sm text-[var(--bf-muted)]">
         New here?{' '}
-        <Link to="/register" className="font-medium text-amber-900 underline">
+        <Link
+          to="/register"
+          className="font-medium text-[var(--bf-accent)] underline-offset-4 hover:underline"
+        >
           Create an account
         </Link>
       </p>

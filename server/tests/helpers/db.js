@@ -17,6 +17,8 @@ async function clearTestUsers() {
 }
 
 async function clearCatalogData() {
+  const Order = require('../../src/modules/orders/order.model');
+  await Order.deleteMany({});
   await Product.deleteMany({});
   await Category.deleteMany({});
 }
@@ -69,6 +71,24 @@ async function createCustomerToken(overrides = {}) {
   return { user, token };
 }
 
+async function createStaffToken(overrides = {}) {
+  const user = await User.create({
+    name: overrides.name || 'Test Staff',
+    email: overrides.email || uniqueEmail('staff'),
+    passwordHash: 'unused-hash',
+    role: 'staff',
+    isActive: true,
+  });
+
+  const token = jwt.sign(
+    { userId: user._id.toString(), role: user.role },
+    env.jwtSecret,
+    { expiresIn: '1h' }
+  );
+
+  return { user, token };
+}
+
 module.exports = {
   connectTestDb,
   clearTestUsers,
@@ -77,4 +97,5 @@ module.exports = {
   uniqueEmail,
   createManagerToken,
   createCustomerToken,
+  createStaffToken,
 };

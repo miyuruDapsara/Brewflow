@@ -16,10 +16,10 @@ export default function CategoryTabs({
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange?.(tab.id)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-200 ${
               isActive
-                ? 'bg-amber-800 text-white'
-                : 'bg-white text-stone-700 ring-1 ring-stone-200 hover:bg-amber-50'
+                ? 'bg-[var(--bf-accent)] text-white shadow-sm'
+                : 'bg-white text-[var(--bf-muted)] ring-1 ring-[var(--bf-border)] hover:text-[var(--bf-ink)]'
             }`}
           >
             {tab.name}

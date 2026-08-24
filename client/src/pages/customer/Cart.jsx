@@ -11,8 +11,8 @@ export default function Cart() {
 
   if (!items.length) {
     return (
-      <section className="space-y-4">
-        <h1 className="text-3xl font-semibold tracking-tight text-amber-950">
+      <section className="bf-page space-y-4">
+        <h1 className="bf-display text-3xl font-bold tracking-tight text-[var(--bf-ink)]">
           Cart
         </h1>
         <EmptyState
@@ -27,9 +27,9 @@ export default function Cart() {
   }
 
   return (
-    <section className="mx-auto max-w-2xl space-y-6">
+    <section className="bf-page mx-auto max-w-2xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight text-amber-950">
+        <h1 className="bf-display text-3xl font-bold tracking-tight text-[var(--bf-ink)]">
           Cart
         </h1>
         <Button variant="ghost" onClick={clearCart}>
@@ -50,14 +50,19 @@ export default function Cart() {
 
       <CartSummary subtotal={subtotal} itemCount={itemCount} />
 
-      <div className="rounded-lg border border-dashed border-stone-300 bg-white/60 p-4 text-sm text-stone-600">
-        Checkout and place order come in the next phase. Your cart is saved in
-        this browser for now.
+      <div className="flex flex-wrap gap-3">
+        <Link to="/checkout">
+          <Button>Checkout</Button>
+        </Link>
+        <Link to="/menu">
+          <Button variant="secondary">Continue shopping</Button>
+        </Link>
       </div>
 
-      <Link to="/menu">
-        <Button variant="secondary">Continue shopping</Button>
-      </Link>
+      <p className="text-xs text-[var(--bf-muted)]">
+        You must be signed in to place an order. Final totals are calculated on
+        the server.
+      </p>
     </section>
   );
 }
