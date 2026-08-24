@@ -1,10 +1,14 @@
 const rateLimit = require('express-rate-limit');
+const { env } = require('../config/env');
+
+const skipInTest = () => env.nodeEnv === 'test';
 
 const apiRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   message: {
     error: {
       code: 'RATE_LIMIT',
@@ -18,6 +22,7 @@ const authRateLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipInTest,
   message: {
     error: {
       code: 'RATE_LIMIT',

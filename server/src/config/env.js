@@ -8,11 +8,16 @@ const env = {
   port: Number(process.env.PORT) || 5000,
   mongodbUri: process.env.MONGODB_URI || '',
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  jwtSecret: process.env.JWT_SECRET || '',
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
 };
 
 function assertServerEnv() {
   if (!env.mongodbUri) {
     throw new Error('MONGODB_URI is required');
+  }
+  if (!env.jwtSecret) {
+    throw new Error('JWT_SECRET is required');
   }
 }
 
