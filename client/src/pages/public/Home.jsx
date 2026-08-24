@@ -21,6 +21,26 @@ export default function Home() {
         </p>
       </div>
 
+      <div className="flex flex-wrap gap-3">
+        <Link to="/menu">
+          <Button>Browse menu</Button>
+        </Link>
+        {isAuthenticated ? (
+          <Link to="/account">
+            <Button variant="secondary">Go to account</Button>
+          </Link>
+        ) : (
+          <>
+            <Link to="/register">
+              <Button variant="secondary">Create account</Button>
+            </Link>
+            <Link to="/login">
+              <Button variant="ghost">Log in</Button>
+            </Link>
+          </>
+        )}
+      </div>
+
       {isAuthenticated ? (
         <div className="rounded-lg bg-white/70 p-4 shadow-sm ring-1 ring-stone-200">
           <p className="text-sm text-stone-600">Signed in as</p>
@@ -28,22 +48,8 @@ export default function Home() {
             {user?.name}{' '}
             <span className="text-sm font-normal text-stone-500">({user?.role})</span>
           </p>
-          <div className="mt-4">
-            <Link to="/account">
-              <Button variant="secondary">Go to account</Button>
-            </Link>
-          </div>
         </div>
-      ) : (
-        <div className="flex flex-wrap gap-3">
-          <Link to="/register">
-            <Button>Create account</Button>
-          </Link>
-          <Link to="/login">
-            <Button variant="secondary">Log in</Button>
-          </Link>
-        </div>
-      )}
+      ) : null}
     </section>
   );
 }

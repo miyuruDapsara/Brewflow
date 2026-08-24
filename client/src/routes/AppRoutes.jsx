@@ -7,7 +7,10 @@ import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 import Unauthorized from '../pages/auth/Unauthorized';
 import Home from '../pages/public/Home';
+import Menu from '../pages/public/Menu';
 import NotFound from '../pages/public/NotFound';
+import ProductDetails from '../pages/public/ProductDetails';
+import Cart from '../pages/customer/Cart';
 import { ROLES } from '../utils/constants';
 
 function ManagerPlaceholder() {
@@ -26,6 +29,9 @@ export default function AppRoutes() {
     <MainLayout>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/unauthorized" element={<Unauthorized />} />

@@ -1,10 +1,16 @@
+import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import useCart from '../../hooks/useCart';
 import { APP_NAME } from '../../utils/constants';
 import Button from '../common/Button';
+import CartBadge from '../cart/CartBadge';
+import CartDrawer from '../cart/CartDrawer';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
+  const { itemCount } = useCart();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const linkClass = ({ isActive }) =>
     `text-sm font-medium ${isActive ? 'text-amber-900' : 'text-stone-600 hover:text-amber-800'}`;
@@ -20,6 +26,10 @@ export default function Navbar() {
           <NavLink to="/" className={linkClass} end>
             Home
           </NavLink>
+          <NavLink to="/menu" className={linkClass}>
+            Menu
+          </NavLink>
+          <CartBadge count={itemCount} onClick={() => setDrawerOpen(true)} />
           {isAuthenticated ? (
             <>
               <NavLink to="/account" className={linkClass}>
@@ -44,6 +54,8 @@ export default function Navbar() {
           )}
         </nav>
       </div>
+
+      <CartDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </header>
   );
 }
