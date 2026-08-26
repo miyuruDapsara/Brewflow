@@ -62,13 +62,19 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ORDER_STATUS_VALUES,
-      default: ORDER_STATUSES.PLACED,
+      default: ORDER_STATUSES.PENDING_PAYMENT,
       index: true,
     },
     paymentStatus: {
       type: String,
       enum: PAYMENT_STATUS_VALUES,
       default: PAYMENT_STATUSES.PENDING,
+    },
+    payherePaymentId: {
+      type: String,
+      default: null,
+      index: true,
+      sparse: true,
     },
     subtotal: { type: Number, required: true, min: 0 },
     tax: { type: Number, required: true, min: 0 },
@@ -96,6 +102,7 @@ orderSchema.methods.toSafeObject = function toSafeObject() {
     orderType: this.orderType,
     status: this.status,
     paymentStatus: this.paymentStatus,
+    payherePaymentId: this.payherePaymentId || null,
     subtotal: this.subtotal,
     tax: this.tax,
     discount: this.discount,

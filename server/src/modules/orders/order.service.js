@@ -13,6 +13,11 @@ const {
   STATUS_TRANSITIONS,
 } = require('./order.constants');
 const { ROLES } = require('../auth/auth.constants');
+const {
+  emitOrderUpdated,
+  emitOrderReady,
+  emitOrderCancelled,
+} = require('../../sockets/orderEvents');
 
 function toOrder(doc) {
   return doc.toSafeObject();
@@ -49,7 +54,7 @@ async function createOrder(customerId, payload) {
         customerId,
         orderNumber: generateOrderNumber(),
         orderType: payload.orderType,
-        status: ORDER_STATUSES.PLACED,
+        status: ORDER_STATUSES.PENDING_PAYMENT,
         paymentStatus: PAYMENT_STATUSES.PENDING,
         subtotal: priced.subtotal,
         tax: priced.tax,
@@ -118,7 +123,9 @@ async function cancelOrder(orderId, customerId) {
 
   order.status = ORDER_STATUSES.CANCELLED;
   await order.save();
-  return toOrder(order);
+  const safe = toOrder(order);
+  emitOrderCancelled(safe);
+  return safe;
 }
 
 async function updateOrderStatus(orderId, nextStatus) {
@@ -138,7 +145,18 @@ async function updateOrderStatus(orderId, nextStatus) {
 
   order.status = nextStatus;
   await order.save();
-  return toOrder(order);
+  const safe = toOrder(order);
+
+  if (nextStatus === ORDER_STATUSES.CANCELLED) {
+    emitOrderCancelled(safe);
+  } else if (nextStatus === ORDER_STATUSES.READY) {
+    emitOrderUpdated(safe);
+    emitOrderReady(safe);
+  } else {
+    emitOrderUpdated(safe);
+  }
+
+  return safe;
 }
 
 async function listAdminOrders() {

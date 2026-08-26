@@ -8,6 +8,7 @@ import {
 } from 'react';
 import * as authService from '../services/auth';
 import { clearToken, getToken, setToken } from '../utils/storage';
+import { disconnectSocket } from '../sockets/socketClient';
 
 const AuthContext = createContext(null);
 
@@ -71,6 +72,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    disconnectSocket();
     clearToken();
     setTokenState(null);
     setUser(null);

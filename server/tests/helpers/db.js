@@ -18,7 +18,9 @@ async function clearTestUsers() {
 
 async function clearCatalogData() {
   const Order = require('../../src/modules/orders/order.model');
+  const WebhookEvent = require('../../src/modules/webhooks/webhookEvent.model');
   await Order.deleteMany({});
+  await WebhookEvent.deleteMany({});
   await Product.deleteMany({});
   await Category.deleteMany({});
 }

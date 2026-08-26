@@ -12,8 +12,11 @@ import NotFound from '../pages/public/NotFound';
 import ProductDetails from '../pages/public/ProductDetails';
 import Cart from '../pages/customer/Cart';
 import Checkout from '../pages/customer/Checkout';
+import CheckoutReturn from '../pages/customer/CheckoutReturn';
+import CheckoutCancel from '../pages/customer/CheckoutCancel';
 import OrderDetails from '../pages/customer/OrderDetails';
 import OrderHistory from '../pages/customer/OrderHistory';
+import StaffDashboard from '../pages/staff/StaffDashboard';
 import { ROLES } from '../utils/constants';
 
 function ManagerPlaceholder() {
@@ -42,6 +45,22 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <Checkout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout/return"
+          element={
+            <ProtectedRoute>
+              <CheckoutReturn />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout/cancel"
+          element={
+            <ProtectedRoute>
+              <CheckoutCancel />
             </ProtectedRoute>
           }
         />
@@ -78,6 +97,16 @@ export default function AppRoutes() {
             <ProtectedRoute>
               <RoleGuard roles={[ROLES.MANAGER]}>
                 <ManagerPlaceholder />
+              </RoleGuard>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/staff"
+          element={
+            <ProtectedRoute>
+              <RoleGuard roles={[ROLES.STAFF, ROLES.MANAGER]}>
+                <StaffDashboard />
               </RoleGuard>
             </ProtectedRoute>
           }

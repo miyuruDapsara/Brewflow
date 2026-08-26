@@ -11,6 +11,17 @@ const env = {
   jwtSecret: process.env.JWT_SECRET || '',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   taxRate: Number(process.env.TAX_RATE ?? 0.08),
+  payhereMerchantId: process.env.PAYHERE_MERCHANT_ID || '',
+  payhereMerchantSecret: process.env.PAYHERE_MERCHANT_SECRET || '',
+  payhereCurrency: process.env.PAYHERE_CURRENCY || 'LKR',
+  payhereCheckoutUrl:
+    process.env.PAYHERE_CHECKOUT_URL ||
+    'https://sandbox.payhere.lk/pay/checkout',
+  payhereNotifyUrl: process.env.PAYHERE_NOTIFY_URL || '',
+  payhereReturnUrl:
+    process.env.PAYHERE_RETURN_URL || 'http://localhost:5173/checkout/return',
+  payhereCancelUrl:
+    process.env.PAYHERE_CANCEL_URL || 'http://localhost:5173/checkout/cancel',
 };
 
 function assertServerEnv() {

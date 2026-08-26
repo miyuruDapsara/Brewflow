@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useCart from '../../hooks/useCart';
-import { APP_NAME } from '../../utils/constants';
+import { APP_NAME, ROLES } from '../../utils/constants';
 import Button from '../common/Button';
 import CartBadge from '../cart/CartBadge';
 import CartDrawer from '../cart/CartDrawer';
@@ -11,6 +11,8 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const { itemCount } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const isStaff =
+    user?.role === ROLES.STAFF || user?.role === ROLES.MANAGER;
 
   const linkClass = ({ isActive }) =>
     `text-sm font-medium transition duration-200 ${
@@ -39,6 +41,11 @@ export default function Navbar() {
           <CartBadge count={itemCount} onClick={() => setDrawerOpen(true)} />
           {isAuthenticated ? (
             <>
+              {isStaff ? (
+                <NavLink to="/staff" className={linkClass}>
+                  Staff
+                </NavLink>
+              ) : null}
               <NavLink to="/orders" className={linkClass}>
                 Orders
               </NavLink>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import OrderActions from '../../components/orders/OrderActions';
 import OrderItemList from '../../components/orders/OrderItemList';
@@ -7,6 +7,7 @@ import OrderStatusTimeline from '../../components/orders/OrderStatusTimeline';
 import Button from '../../components/common/Button';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import Spinner from '../../components/common/Spinner';
+import useOrderSocket from '../../hooks/useOrderSocket';
 import { cancelOrder, getOrder } from '../../services/order';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { getErrorMessage } from '../../utils/errorHandler';
@@ -17,6 +18,20 @@ export default function OrderDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [cancelling, setCancelling] = useState(false);
+
+  const loadOrder = useCallback(async () => {
+    if (!id) {
+      return;
+    }
+    setError('');
+    try {
+      const data = await getOrder(id);
+      setOrder(data.order);
+    } catch (err) {
+      setOrder(null);
+      setError(getErrorMessage(err, 'Order not found'));
+    }
+  }, [id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,6 +64,18 @@ export default function OrderDetails() {
       cancelled = true;
     };
   }, [id]);
+
+  const onOrderEvent = useCallback((updated) => {
+    if (updated?.id === id) {
+      setOrder(updated);
+    }
+  }, [id]);
+
+  useOrderSocket({
+    orderId: id,
+    onOrderEvent,
+    onReconnect: loadOrder,
+  });
 
   async function handleCancel() {
     setCancelling(true);
@@ -130,10 +157,17 @@ export default function OrderDetails() {
           </div>
         </dl>
 
-        {order.paymentStatus === 'PENDING' ? (
+        {order.status === 'PENDING_PAYMENT' ||
+        order.paymentStatus === 'PENDING' ? (
           <p className="mt-4 rounded-lg border border-[var(--bf-border)] bg-[var(--bf-cream)] px-3 py-2 text-sm text-[var(--bf-muted)]">
-            Card payment arrives in Phase 10. This order is placed with payment
-            pending.
+            Waiting for PayHere to confirm payment. The order becomes PLACED
+            after a verified notify callback.
+          </p>
+        ) : null}
+
+        {order.status === 'PAYMENT_FAILED' ? (
+          <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+            Payment failed or was cancelled. Start a new checkout to try again.
           </p>
         ) : null}
 

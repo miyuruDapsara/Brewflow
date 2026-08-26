@@ -28,3 +28,18 @@ export async function cancelOrder(id) {
     url: `/api/orders/${id}/cancel`,
   });
 }
+
+export async function listAdminOrders() {
+  return apiRequest({
+    method: 'get',
+    url: '/api/admin/orders',
+  });
+}
+
+export async function updateOrderStatus(orderId, status) {
+  return apiRequest({
+    method: 'patch',
+    url: `/api/orders/${orderId}/status`,
+    data: { status },
+  });
+}

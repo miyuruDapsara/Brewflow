@@ -25,7 +25,7 @@ const ORDER_TYPE_VALUES = Object.values(ORDER_TYPES);
 const ORDER_STATUS_VALUES = Object.values(ORDER_STATUSES);
 const PAYMENT_STATUS_VALUES = Object.values(PAYMENT_STATUSES);
 
-/** Allowed staff/manager status transitions (Phase 9 create starts at PLACED). */
+/** Allowed staff/manager status transitions (create starts at PENDING_PAYMENT). */
 const STATUS_TRANSITIONS = {
   [ORDER_STATUSES.PENDING_PAYMENT]: [
     ORDER_STATUSES.PLACED,

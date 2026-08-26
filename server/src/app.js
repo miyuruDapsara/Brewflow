@@ -11,6 +11,7 @@ const categoryRoutes = require('./modules/categories/category.routes');
 const productRoutes = require('./modules/products/product.routes');
 const orderRoutes = require('./modules/orders/order.routes');
 const adminOrderRoutes = require('./modules/orders/order.admin.routes');
+const paymentRoutes = require('./modules/payments/payment.routes');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

@@ -1,12 +1,17 @@
+const http = require('http');
 const app = require('./app');
 const { env, assertServerEnv } = require('./config/env');
 const { connectDatabase } = require('./config/database');
+const { initSocketServer } = require('./sockets/socketServer');
 
 async function startServer() {
   assertServerEnv();
   await connectDatabase();
 
-  app.listen(env.port, () => {
+  const server = http.createServer(app);
+  initSocketServer(server);
+
+  server.listen(env.port, () => {
     console.log(`BrewFlow server listening on port ${env.port}`);
   });
 }

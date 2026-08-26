@@ -8,6 +8,8 @@ const {
   listMyOrders,
   getOrder,
   cancelOrder,
+  listAdminOrders,
+  updateOrderStatus,
 } = require('../../services/order');
 
 describe('order service', () => {
@@ -62,6 +64,25 @@ describe('order service', () => {
     expect(apiRequest).toHaveBeenCalledWith({
       method: 'patch',
       url: '/api/orders/o1/cancel',
+    });
+  });
+
+  it('lists admin orders and updates status', async () => {
+    apiRequest.mockResolvedValueOnce({ orders: [{ id: 'o1' }] });
+    await listAdminOrders();
+    expect(apiRequest).toHaveBeenCalledWith({
+      method: 'get',
+      url: '/api/admin/orders',
+    });
+
+    apiRequest.mockResolvedValueOnce({
+      order: { id: 'o1', status: 'PREPARING' },
+    });
+    await updateOrderStatus('o1', 'PREPARING');
+    expect(apiRequest).toHaveBeenCalledWith({
+      method: 'patch',
+      url: '/api/orders/o1/status',
+      data: { status: 'PREPARING' },
     });
   });
 });

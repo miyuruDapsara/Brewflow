@@ -1,6 +1,8 @@
 # Ignore Cursor rules and internal documentation from git tracking
 .cursor/
 docs/
+# Personal interview notes (local only — do not push)
+interview preparation/
 node_modules/
 .env
 dist/

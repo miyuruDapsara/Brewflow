@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import EmptyState from '../../components/common/EmptyState';
+import PayHereCheckout from '../../components/payments/PayHereCheckout';
 import useCart from '../../hooks/useCart';
 import { createOrder } from '../../services/order';
+import { createCheckoutSession } from '../../services/payment';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { getErrorMessage } from '../../utils/errorHandler';
 
@@ -21,27 +23,39 @@ function cartItemsToOrderPayload(items) {
 }
 
 export default function Checkout() {
-  const navigate = useNavigate();
   const { items, subtotal, clearCart } = useCart();
   const [orderType, setOrderType] = useState('PICKUP');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [payHereSession, setPayHereSession] = useState(null);
 
-  async function handlePlaceOrder() {
+  async function handleContinueToPayment() {
     setError('');
     setSubmitting(true);
     try {
-      const data = await createOrder({
+      const created = await createOrder({
         orderType,
         items: cartItemsToOrderPayload(items),
       });
+      const payment = await createCheckoutSession(created.order.id);
       clearCart();
-      navigate(`/orders/${data.order.id}`);
+      setPayHereSession(payment.session);
     } catch (err) {
-      setError(getErrorMessage(err, 'Unable to place order'));
+      setError(getErrorMessage(err, 'Unable to start PayHere checkout'));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (payHereSession) {
+    return (
+      <section className="bf-page mx-auto max-w-xl space-y-4">
+        <h1 className="bf-display text-3xl font-bold text-[var(--bf-ink)]">
+          Checkout
+        </h1>
+        <PayHereCheckout session={payHereSession} />
+      </section>
+    );
   }
 
   if (!items.length) {
@@ -107,15 +121,15 @@ export default function Checkout() {
           ))}
         </ul>
         <p className="mt-4 text-sm text-[var(--bf-muted)]">
-          Cart preview subtotal: {formatCurrency(subtotal)}. Final tax and total
-          are calculated on the server when you place the order.
+          Cart preview subtotal: {formatCurrency(subtotal, 'LKR')}. Final tax
+          and total are calculated on the server. You will pay with PayHere.
         </p>
       </div>
 
       <ErrorMessage message={error} />
 
-      <Button disabled={submitting} onClick={handlePlaceOrder}>
-        {submitting ? 'Placing order...' : 'Place order'}
+      <Button disabled={submitting} onClick={handleContinueToPayment}>
+        {submitting ? 'Preparing PayHere…' : 'Continue to PayHere'}
       </Button>
     </section>
   );

@@ -99,7 +99,7 @@ describe('orders API integration', () => {
       });
 
     expect(res.status).toBe(201);
-    expect(res.body.data.order.status).toBe('PLACED');
+    expect(res.body.data.order.status).toBe('PENDING_PAYMENT');
     expect(res.body.data.order.paymentStatus).toBe('PENDING');
     expect(res.body.data.order.subtotal).toBe(1000);
     expect(res.body.data.order.tax).toBe(80);
@@ -172,6 +172,8 @@ describe('orders API integration', () => {
   });
 
   it('allows customer cancel when PLACED and staff status updates', async () => {
+    const Order = require('../../src/modules/orders/order.model');
+
     const created = await request(app)
       .post('/api/orders')
       .set('Authorization', `Bearer ${customer.token}`)
@@ -187,6 +189,10 @@ describe('orders API integration', () => {
       });
 
     const orderId = created.body.data.order.id;
+    await Order.findByIdAndUpdate(orderId, {
+      status: 'PLACED',
+      paymentStatus: 'SUCCEEDED',
+    });
 
     const preparing = await request(app)
       .patch(`/api/orders/${orderId}/status`)
@@ -216,6 +222,11 @@ describe('orders API integration', () => {
           },
         ],
       });
+
+    await Order.findByIdAndUpdate(created2.body.data.order.id, {
+      status: 'PLACED',
+      paymentStatus: 'SUCCEEDED',
+    });
 
     const cancel = await request(app)
       .patch(`/api/orders/${created2.body.data.order.id}/cancel`)
