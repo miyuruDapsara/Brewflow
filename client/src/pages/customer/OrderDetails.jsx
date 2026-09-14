@@ -7,9 +7,11 @@ import OrderStatusTimeline from '../../components/orders/OrderStatusTimeline';
 import Button from '../../components/common/Button';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import Spinner from '../../components/common/Spinner';
+import { getDemoOrderById } from '../../data/uiDemoData';
 import useOrderSocket from '../../hooks/useOrderSocket';
 import { cancelOrder, getOrder } from '../../services/order';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { isUiDemoEnabled } from '../../utils/uiDemo';
 import { getErrorMessage } from '../../utils/errorHandler';
 
 export default function OrderDetails() {
@@ -18,12 +20,21 @@ export default function OrderDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [cancelling, setCancelling] = useState(false);
+  const demoMode = isUiDemoEnabled();
 
   const loadOrder = useCallback(async () => {
     if (!id) {
       return;
     }
     setError('');
+
+    if (demoMode) {
+      const demo = getDemoOrderById(id);
+      setOrder(demo);
+      setError(demo ? '' : 'Order not found');
+      return;
+    }
+
     try {
       const data = await getOrder(id);
       setOrder(data.order);
@@ -31,7 +42,7 @@ export default function OrderDetails() {
       setOrder(null);
       setError(getErrorMessage(err, 'Order not found'));
     }
-  }, [id]);
+  }, [demoMode, id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,6 +50,17 @@ export default function OrderDetails() {
     async function load() {
       setLoading(true);
       setError('');
+
+      if (demoMode) {
+        const demo = getDemoOrderById(id);
+        if (!cancelled) {
+          setOrder(demo);
+          setError(demo ? '' : 'Order not found');
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const data = await getOrder(id);
         if (!cancelled) {
@@ -63,23 +85,31 @@ export default function OrderDetails() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [demoMode, id]);
 
   const onOrderEvent = useCallback((updated) => {
-    if (updated?.id === id) {
+    if (!demoMode && updated?.id === id) {
       setOrder(updated);
     }
-  }, [id]);
+  }, [demoMode, id]);
 
   useOrderSocket({
-    orderId: id,
+    orderId: demoMode ? null : id,
     onOrderEvent,
     onReconnect: loadOrder,
   });
-
   async function handleCancel() {
     setCancelling(true);
     setError('');
+
+    if (demoMode) {
+      setOrder((prev) =>
+        prev ? { ...prev, status: 'CANCELLED' } : prev
+      );
+      setCancelling(false);
+      return;
+    }
+
     try {
       const data = await cancelOrder(id);
       setOrder(data.order);

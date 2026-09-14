@@ -19,10 +19,16 @@ async function clearTestUsers() {
 async function clearCatalogData() {
   const Order = require('../../src/modules/orders/order.model');
   const WebhookEvent = require('../../src/modules/webhooks/webhookEvent.model');
+  const InventoryItem = require('../../src/modules/inventory/inventoryItem.model');
+  const InventoryTransaction = require('../../src/modules/inventory/inventoryTransaction.model');
+  const AuditLog = require('../../src/modules/audit/auditLog.model');
   await Order.deleteMany({});
   await WebhookEvent.deleteMany({});
+  await InventoryTransaction.deleteMany({});
+  await InventoryItem.deleteMany({});
   await Product.deleteMany({});
   await Category.deleteMany({});
+  await AuditLog.deleteMany({});
 }
 
 async function disconnectTestDb() {

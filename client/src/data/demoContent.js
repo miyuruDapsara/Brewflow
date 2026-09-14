@@ -119,3 +119,87 @@ export const demoBanner = {
   title: 'Taste the difference in every pour',
   ctaLabel: 'Explore the menu',
 };
+
+/** Static About page — café story / visit / order-ahead (not VITE_UI_DEMO list fakes). */
+export const aboutPage = {
+  intro: {
+    eyebrow: 'About BrewFlow',
+    headline: 'Our café & how we brew',
+    mission:
+      'A neighborhood café built for slow mornings and quick pickups — order ahead so your drink is ready when you walk in.',
+  },
+  story: {
+    title: 'Our story',
+    body: 'BrewFlow started as a small counter with a single espresso machine and a simple idea: great coffee should be easy to get without losing the café feel. We roast for balance, bake in small batches, and keep the queue moving so guests spend less time waiting and more time enjoying the cup.',
+    imageUrl:
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1000&q=80',
+    sinceLabel: 'Serving guests since 2022',
+  },
+  howItWorks: {
+    title: 'How ordering works',
+    steps: [
+      {
+        title: 'Browse the menu',
+        text: 'Explore drinks and bakery items, then pick your favorites.',
+      },
+      {
+        title: 'Customize & pay',
+        text: 'Choose size, milk, and add-ons, then check out securely.',
+      },
+      {
+        title: 'Pick up when ready',
+        text: 'We prepare your order in the kitchen queue — grab it hot at the counter.',
+      },
+    ],
+  },
+  craft: {
+    title: 'What we care about',
+    items: [
+      {
+        title: 'Beans',
+        text: 'Balanced blends roasted for espresso and milk drinks alike.',
+      },
+      {
+        title: 'Care',
+        text: 'Consistent recipes, clean equipment, and drinks made to order.',
+      },
+      {
+        title: 'Community',
+        text: 'A friendly counter for neighbors, students, and remote workers.',
+      },
+    ],
+  },
+  team: {
+    title: 'The team',
+    members: [
+      {
+        role: 'Barista',
+        name: 'Nimal P.',
+        blurb: 'Pulls shots and steams milk for every custom drink.',
+      },
+      {
+        role: 'Baker',
+        name: 'Amaya S.',
+        blurb: 'Keeps muffins, cakes, and daily pastry trays fresh.',
+      },
+      {
+        role: 'Manager',
+        name: 'Ravi F.',
+        blurb: 'Looks after inventory, the floor, and guest experience.',
+      },
+    ],
+  },
+  visit: {
+    title: 'Visit us',
+    hours: 'Daily 7:00 AM – 8:00 PM',
+    address: '42 Galle Road, Colombo 03',
+    email: 'hello@brewflow.cafe',
+    phone: '+94 11 234 5678',
+    note: 'Free Wi-Fi · Street parking nearby · Order ahead for faster pickup',
+  },
+  cta: {
+    title: 'Ready for your next cup?',
+    menuLabel: 'View menu',
+    registerLabel: 'Create account',
+  },
+};

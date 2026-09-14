@@ -36,6 +36,14 @@ describe('products API integration', () => {
   });
 
   it('creates STOCK_BASED and RECIPE_BASED products with modifiers', async () => {
+    const InventoryItem = require('../../src/modules/inventory/inventoryItem.model');
+    const milk = await InventoryItem.create({
+      name: 'Milk',
+      unit: 'ml',
+      currentQuantity: 2000,
+      reorderLevel: 200,
+    });
+
     const stock = await request(app)
       .post('/api/products')
       .set('Authorization', `Bearer ${managerToken}`)
@@ -63,7 +71,7 @@ describe('products API integration', () => {
         inventoryMode: 'RECIPE_BASED',
         recipeItems: [
           {
-            inventoryItemId: new mongoose.Types.ObjectId().toString(),
+            inventoryItemId: milk._id.toString(),
             quantityRequired: 18,
             unit: 'g',
           },

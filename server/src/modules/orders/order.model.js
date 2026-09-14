@@ -76,6 +76,10 @@ const orderSchema = new mongoose.Schema(
       index: true,
       sparse: true,
     },
+    inventoryDeducted: {
+      type: Boolean,
+      default: false,
+    },
     subtotal: { type: Number, required: true, min: 0 },
     tax: { type: Number, required: true, min: 0 },
     discount: { type: Number, required: true, min: 0, default: 0 },
@@ -103,6 +107,7 @@ orderSchema.methods.toSafeObject = function toSafeObject() {
     status: this.status,
     paymentStatus: this.paymentStatus,
     payherePaymentId: this.payherePaymentId || null,
+    inventoryDeducted: Boolean(this.inventoryDeducted),
     subtotal: this.subtotal,
     tax: this.tax,
     discount: this.discount,

@@ -1,15 +1,16 @@
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import LoginForm from '../../components/auth/LoginForm';
 import useAuth from '../../hooks/useAuth';
+import { getPostLoginPath } from '../../utils/roleHome';
 
 export default function Login() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from || '/account';
+  const fromPath = location.state?.from;
 
   if (!loading && isAuthenticated) {
-    return <Navigate to={redirectTo} replace />;
+    return <Navigate to={getPostLoginPath(user, fromPath)} replace />;
   }
 
   return (
@@ -23,7 +24,13 @@ export default function Login() {
         </p>
       </div>
       <div className="bf-glass-strong rounded-2xl p-6">
-        <LoginForm onSuccess={() => navigate(redirectTo, { replace: true })} />
+        <LoginForm
+          onSuccess={(loggedInUser) =>
+            navigate(getPostLoginPath(loggedInUser, fromPath), {
+              replace: true,
+            })
+          }
+        />
       </div>
       <p className="text-sm text-[var(--bf-muted)]">
         New here?{' '}

@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 const Product = require('./product.model');
 const Category = require('../categories/category.model');
+const InventoryItem = require('../inventory/inventoryItem.model');
 const { INVENTORY_MODES } = require('./product.constants');
 const ApiError = require('../../utils/ApiError');
+const auditService = require('../audit/audit.service');
+const { AUDIT_ACTIONS, ENTITY_TYPES } = require('../audit/audit.constants');
 
-function toProduct(doc) {
+async function toProduct(doc) {
   const safe = doc.toSafeObject();
-  safe.isCurrentlyAvailable = Product.isProductAvailable(doc);
+  safe.isCurrentlyAvailable = await Product.hasFulfillableStock(doc);
   return safe;
 }
 
@@ -37,6 +40,26 @@ function normalizeInventoryFields(payload) {
   return data;
 }
 
+async function assertRecipeInventoryItems(recipeItems = []) {
+  if (!recipeItems.length) {
+    return;
+  }
+  const ids = [
+    ...new Set(recipeItems.map((r) => String(r.inventoryItemId))),
+  ];
+  for (const id of ids) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw ApiError.badRequest('Invalid inventoryItemId in recipeItems');
+    }
+  }
+  const found = await InventoryItem.find({ _id: { $in: ids } });
+  if (found.length !== ids.length) {
+    throw ApiError.badRequest(
+      'recipeItems.inventoryItemId must reference existing inventory items'
+    );
+  }
+}
+
 async function listActiveProducts({ categoryId } = {}) {
   const filter = { isActive: true };
 
@@ -48,7 +71,7 @@ async function listActiveProducts({ categoryId } = {}) {
   }
 
   const products = await Product.find(filter).sort({ name: 1 });
-  return products.map(toProduct);
+  return Promise.all(products.map((p) => toProduct(p)));
 }
 
 async function getProductById(id) {
@@ -64,14 +87,27 @@ async function getProductById(id) {
   return toProduct(product);
 }
 
-async function createProduct(payload) {
+async function createProduct(payload, actorId) {
   await assertCategoryExists(payload.categoryId);
   const data = normalizeInventoryFields(payload);
+  if (data.inventoryMode === INVENTORY_MODES.RECIPE_BASED) {
+    await assertRecipeInventoryItems(data.recipeItems);
+  }
   const product = await Product.create(data);
-  return toProduct(product);
+  const safe = toProduct(product);
+  if (actorId) {
+    auditService.writeLogSafe({
+      actorId,
+      action: AUDIT_ACTIONS.PRODUCT_CREATED,
+      entityType: ENTITY_TYPES.PRODUCT,
+      entityId: safe.id,
+      details: { name: safe.name, basePrice: safe.basePrice },
+    });
+  }
+  return safe;
 }
 
-async function updateProduct(id, payload) {
+async function updateProduct(id, payload, actorId) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw ApiError.notFound('Product not found');
   }
@@ -80,6 +116,8 @@ async function updateProduct(id, payload) {
   if (!product) {
     throw ApiError.notFound('Product not found');
   }
+
+  const previousPrice = product.basePrice;
 
   if (payload.categoryId) {
     await assertCategoryExists(payload.categoryId);
@@ -121,12 +159,35 @@ async function updateProduct(id, payload) {
     recipeItems: merged.recipeItems,
   });
 
+  if (nextMode === INVENTORY_MODES.RECIPE_BASED) {
+    await assertRecipeInventoryItems(data.recipeItems);
+  }
+
   Object.assign(product, data);
   await product.save();
-  return toProduct(product);
+  const safe = toProduct(product);
+  if (actorId) {
+    const details = { name: safe.name };
+    if (
+      payload.basePrice !== undefined &&
+      Number(payload.basePrice) !== Number(previousPrice)
+    ) {
+      details.previousPrice = previousPrice;
+      details.basePrice = safe.basePrice;
+      details.priceChanged = true;
+    }
+    auditService.writeLogSafe({
+      actorId,
+      action: AUDIT_ACTIONS.PRODUCT_UPDATED,
+      entityType: ENTITY_TYPES.PRODUCT,
+      entityId: safe.id,
+      details,
+    });
+  }
+  return safe;
 }
 
-async function deleteProduct(id) {
+async function deleteProduct(id, actorId) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw ApiError.notFound('Product not found');
   }
@@ -136,7 +197,17 @@ async function deleteProduct(id) {
     throw ApiError.notFound('Product not found');
   }
 
+  const name = product.name;
   await product.deleteOne();
+  if (actorId) {
+    auditService.writeLogSafe({
+      actorId,
+      action: AUDIT_ACTIONS.PRODUCT_DELETED,
+      entityType: ENTITY_TYPES.PRODUCT,
+      entityId: product._id.toString(),
+      details: { name },
+    });
+  }
   return { id: product._id.toString() };
 }
 

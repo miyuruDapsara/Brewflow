@@ -24,7 +24,8 @@ async function cancel(req, res) {
 async function updateStatus(req, res) {
   const order = await orderService.updateOrderStatus(
     req.params.id,
-    req.body.status
+    req.body.status,
+    req.user.id
   );
   return sendSuccess(res, { order });
 }

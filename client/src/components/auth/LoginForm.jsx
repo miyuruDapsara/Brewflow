@@ -18,8 +18,8 @@ export default function LoginForm({ onSuccess }) {
     setSubmitting(true);
 
     try {
-      await login({ email, password });
-      onSuccess?.();
+      const result = await login({ email, password });
+      onSuccess?.(result?.user);
     } catch (err) {
       setError(getErrorMessage(err, 'Unable to log in'));
     } finally {

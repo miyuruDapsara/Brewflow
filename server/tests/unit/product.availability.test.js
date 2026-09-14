@@ -70,6 +70,57 @@ describe('product availability helper', () => {
     ).toBe(true);
   });
 
+  it('hasFulfillableStock checks ingredient quantities for RECIPE_BASED', async () => {
+    const InventoryItem = require('../../src/modules/inventory/inventoryItem.model');
+    const {
+      connectTestDb,
+      clearCatalogData,
+      clearTestUsers,
+      disconnectTestDb,
+    } = require('../helpers/db');
+
+    await connectTestDb();
+    await clearCatalogData();
+    await clearTestUsers();
+
+    const item = await InventoryItem.create({
+      name: 'Milk',
+      unit: 'ml',
+      currentQuantity: 50,
+      reorderLevel: 10,
+    });
+
+    const ok = await Product.hasFulfillableStock({
+      isActive: true,
+      isAvailable: true,
+      inventoryMode: INVENTORY_MODES.RECIPE_BASED,
+      recipeItems: [
+        {
+          inventoryItemId: item._id,
+          quantityRequired: 40,
+          unit: 'ml',
+        },
+      ],
+    });
+    expect(ok).toBe(true);
+
+    const no = await Product.hasFulfillableStock({
+      isActive: true,
+      isAvailable: true,
+      inventoryMode: INVENTORY_MODES.RECIPE_BASED,
+      recipeItems: [
+        {
+          inventoryItemId: item._id,
+          quantityRequired: 100,
+          unit: 'ml',
+        },
+      ],
+    });
+    expect(no).toBe(false);
+
+    await disconnectTestDb();
+  });
+
   it('exposes the same helper on the Product model', () => {
     expect(
       Product.isProductAvailable({

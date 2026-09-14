@@ -1,0 +1,21 @@
+# Used when build context is the repository root
+.git
+.cursor
+.github
+docs
+interview preparation
+node_modules
+**/node_modules
+**/coverage
+**/dist
+client/dist
+server/coverage
+.env
+.env.*
+!.env.example
+*.md
+!README.md
+npm-debug.log*
+.DS_Store
+.vscode
+.idea

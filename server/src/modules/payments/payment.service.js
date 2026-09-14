@@ -14,6 +14,7 @@ const {
   PAYMENT_STATUSES,
 } = require('../orders/order.constants');
 const { emitOrderCreated } = require('../../sockets/orderEvents');
+const inventoryService = require('../inventory/inventory.service');
 
 function assertObjectId(id, label = 'id') {
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -193,7 +194,14 @@ async function handleNotify(payload) {
     order.paymentStatus = PAYMENT_STATUSES.SUCCEEDED;
     order.payherePaymentId = paymentId || order.payherePaymentId || null;
     await order.save();
-    // Inventory deduction deferred to Phase 13.
+    try {
+      await inventoryService.deductForOrder(order);
+    } catch (err) {
+      console.error(
+        'Inventory deduction failed after payment (order stays PLACED):',
+        err.message
+      );
+    }
     emitOrderCreated(order.toSafeObject());
     return { duplicate: false, status: order.status, paymentStatus: order.paymentStatus };
   }

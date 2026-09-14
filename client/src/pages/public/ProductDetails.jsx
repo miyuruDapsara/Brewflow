@@ -6,8 +6,10 @@ import Spinner from '../../components/common/Spinner';
 import ProductModifierModal from '../../components/products/ProductModifierModal';
 import useCart from '../../hooks/useCart';
 import { PRODUCT_IMAGE_PLACEHOLDER } from '../../data/demoContent';
+import { getDemoProductById } from '../../data/uiDemoData';
 import { getProduct } from '../../services/product';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { isUiDemoEnabled } from '../../utils/uiDemo';
 import { getErrorMessage } from '../../utils/errorHandler';
 
 export default function ProductDetails() {
@@ -25,6 +27,17 @@ export default function ProductDetails() {
     async function load() {
       setLoading(true);
       setError('');
+
+      if (isUiDemoEnabled()) {
+        const demo = getDemoProductById(id);
+        if (!cancelled) {
+          setProduct(demo);
+          setError(demo ? '' : 'Product not found');
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const data = await getProduct(id);
         if (!cancelled) {

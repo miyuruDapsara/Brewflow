@@ -18,6 +18,9 @@ const {
   emitOrderReady,
   emitOrderCancelled,
 } = require('../../sockets/orderEvents');
+const inventoryService = require('../inventory/inventory.service');
+const auditService = require('../audit/audit.service');
+const { AUDIT_ACTIONS, ENTITY_TYPES } = require('../audit/audit.constants');
 
 function toOrder(doc) {
   return doc.toSafeObject();
@@ -41,6 +44,15 @@ async function createOrder(customerId, payload) {
 
   if (products.length !== productIds.length) {
     throw ApiError.badRequest('One or more products were not found');
+  }
+
+  for (const product of products) {
+    const ok = await Product.hasFulfillableStock(product);
+    if (!ok) {
+      throw ApiError.badRequest(
+        `Product is unavailable or out of ingredients: ${product.name}`
+      );
+    }
   }
 
   const priced = calculateOrderPricing(products, payload.items, env.taxRate);
@@ -123,12 +135,17 @@ async function cancelOrder(orderId, customerId) {
 
   order.status = ORDER_STATUSES.CANCELLED;
   await order.save();
+  try {
+    await inventoryService.restoreForOrder(order);
+  } catch (err) {
+    console.error('Inventory restore failed on cancel:', err.message);
+  }
   const safe = toOrder(order);
   emitOrderCancelled(safe);
   return safe;
 }
 
-async function updateOrderStatus(orderId, nextStatus) {
+async function updateOrderStatus(orderId, nextStatus, actorId) {
   assertObjectId(orderId, 'orderId');
 
   const order = await Order.findById(orderId);
@@ -145,6 +162,24 @@ async function updateOrderStatus(orderId, nextStatus) {
 
   order.status = nextStatus;
   await order.save();
+
+  if (nextStatus === ORDER_STATUSES.CANCELLED) {
+    try {
+      await inventoryService.restoreForOrder(order);
+    } catch (err) {
+      console.error('Inventory restore failed on status cancel:', err.message);
+    }
+    if (actorId) {
+      auditService.writeLogSafe({
+        actorId,
+        action: AUDIT_ACTIONS.ORDER_CANCELLED_BY_STAFF,
+        entityType: ENTITY_TYPES.ORDER,
+        entityId: order._id.toString(),
+        details: { orderNumber: order.orderNumber },
+      });
+    }
+  }
+
   const safe = toOrder(order);
 
   if (nextStatus === ORDER_STATUSES.CANCELLED) {

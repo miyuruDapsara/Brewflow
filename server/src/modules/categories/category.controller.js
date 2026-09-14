@@ -12,17 +12,27 @@ async function getById(req, res) {
 }
 
 async function create(req, res) {
-  const category = await categoryService.createCategory(req.body);
+  const category = await categoryService.createCategory(
+    req.body,
+    req.user?.id
+  );
   return sendSuccess(res, { category }, 201);
 }
 
 async function update(req, res) {
-  const category = await categoryService.updateCategory(req.params.id, req.body);
+  const category = await categoryService.updateCategory(
+    req.params.id,
+    req.body,
+    req.user?.id
+  );
   return sendSuccess(res, { category });
 }
 
 async function remove(req, res) {
-  const result = await categoryService.deleteCategory(req.params.id);
+  const result = await categoryService.deleteCategory(
+    req.params.id,
+    req.user?.id
+  );
   return sendSuccess(res, result);
 }
 

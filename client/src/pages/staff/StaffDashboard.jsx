@@ -4,12 +4,14 @@ import StaffStats from '../../components/staff/StaffStats';
 import Button from '../../components/common/Button';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import Spinner from '../../components/common/Spinner';
+import { UI_DEMO_ORDERS } from '../../data/uiDemoData';
 import useOrderSocket from '../../hooks/useOrderSocket';
 import {
   listAdminOrders,
   updateOrderStatus,
 } from '../../services/order';
 import { ACTIVE_ORDER_STATUSES } from '../../utils/constants';
+import { isUiDemoEnabled } from '../../utils/uiDemo';
 import { getErrorMessage } from '../../utils/errorHandler';
 
 function countByStatus(orders) {
@@ -25,12 +27,22 @@ export default function StaffDashboard() {
   const [error, setError] = useState('');
   const [updatingId, setUpdatingId] = useState('');
   const [busyStatus, setBusyStatus] = useState('');
+  const demoMode = isUiDemoEnabled();
 
   const loadOrders = useCallback(async ({ silent = false } = {}) => {
     if (!silent) {
       setLoading(true);
     }
     setError('');
+
+    if (demoMode) {
+      setOrders(UI_DEMO_ORDERS.map((o) => ({ ...o })));
+      if (!silent) {
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       const data = await listAdminOrders();
       setOrders(data.orders || []);
@@ -41,14 +53,14 @@ export default function StaffDashboard() {
         setLoading(false);
       }
     }
-  }, []);
+  }, [demoMode]);
 
   useEffect(() => {
     loadOrders();
   }, [loadOrders]);
 
   const onOrderEvent = useCallback((order) => {
-    if (!order?.id) {
+    if (!order?.id || demoMode) {
       return;
     }
     setOrders((prev) => {
@@ -60,14 +72,16 @@ export default function StaffDashboard() {
       next[idx] = order;
       return next;
     });
-  }, []);
+  }, [demoMode]);
 
   const onReconnect = useCallback(() => {
-    loadOrders({ silent: true });
-  }, [loadOrders]);
+    if (!demoMode) {
+      loadOrders({ silent: true });
+    }
+  }, [demoMode, loadOrders]);
 
   useOrderSocket({
-    joinStaff: true,
+    joinStaff: !demoMode,
     onOrderEvent,
     onReconnect,
   });
@@ -90,6 +104,16 @@ export default function StaffDashboard() {
     setUpdatingId(orderId);
     setBusyStatus(status);
     setError('');
+
+    if (demoMode) {
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, status } : o))
+      );
+      setUpdatingId('');
+      setBusyStatus('');
+      return;
+    }
+
     try {
       const data = await updateOrderStatus(orderId, status);
       setOrders((prev) =>
@@ -111,7 +135,9 @@ export default function StaffDashboard() {
             Kitchen queue
           </h1>
           <p className="mt-1 text-sm text-[var(--bf-muted)]">
-            Live updates via Socket.IO. Use Refresh if you reconnect.
+            {demoMode
+              ? 'UI demo orders — status clicks update local state only.'
+              : 'Live updates via Socket.IO. Use Refresh if you reconnect.'}
           </p>
         </div>
         <Button

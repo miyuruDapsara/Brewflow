@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval \"db.adminCommand('ping')\""
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 20s
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test server
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:27017/brewflow-ci
+          JWT_SECRET: ci-test-jwt-secret-not-for-production
+          CLIENT_ORIGIN: http://localhost:5173
+          PAYHERE_MERCHANT_ID: ci_merchant_id
+          PAYHERE_MERCHANT_SECRET: ci_merchant_secret
+          PAYHERE_CURRENCY: LKR
+          PAYHERE_CHECKOUT_URL: https://sandbox.payhere.lk/pay/checkout
+          PAYHERE_NOTIFY_URL: https://example.com/api/payments/notify
+          PAYHERE_RETURN_URL: http://localhost:5173/checkout/return
+          PAYHERE_CANCEL_URL: http://localhost:5173/checkout/cancel
+        run: npm test -w server
+
+      - name: Test client
+        run: npm test -w client
+
+      - name: Build client
+        env:
+          VITE_API_URL: ''
+          VITE_UI_DEMO: 'true'
+        run: npm run build -w client
+
+      - name: Build server Docker image
+        run: docker build -f server/Dockerfile -t brewflow-server:ci .

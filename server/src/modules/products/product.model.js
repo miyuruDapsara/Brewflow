@@ -160,4 +160,33 @@ productSchema.statics.isProductAvailable = function isProductAvailable(product) 
   return Array.isArray(product.recipeItems) && product.recipeItems.length > 0;
 };
 
+/**
+ * Async RECIPE ingredient stock check (Phase 13).
+ * STOCK_BASED falls back to isProductAvailable.
+ */
+productSchema.statics.hasFulfillableStock = async function hasFulfillableStock(
+  product
+) {
+  if (!this.isProductAvailable(product)) {
+    return false;
+  }
+  if (product.inventoryMode !== INVENTORY_MODES.RECIPE_BASED) {
+    return true;
+  }
+
+  const InventoryItem = require('../inventory/inventoryItem.model');
+  const recipes = product.recipeItems || [];
+  const ids = recipes.map((r) => r.inventoryItemId);
+  const items = await InventoryItem.find({
+    _id: { $in: ids },
+    isActive: true,
+  });
+  const map = new Map(items.map((i) => [i._id.toString(), i]));
+
+  return recipes.every((recipe) => {
+    const item = map.get(recipe.inventoryItemId.toString());
+    return item && item.currentQuantity >= recipe.quantityRequired;
+  });
+};
+
 module.exports = mongoose.model('Product', productSchema);

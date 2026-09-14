@@ -5,7 +5,9 @@ import Button from '../../components/common/Button';
 import EmptyState from '../../components/common/EmptyState';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import Spinner from '../../components/common/Spinner';
+import { UI_DEMO_ORDERS } from '../../data/uiDemoData';
 import { listMyOrders } from '../../services/order';
+import { isUiDemoEnabled } from '../../utils/uiDemo';
 import { getErrorMessage } from '../../utils/errorHandler';
 
 export default function OrderHistory() {
@@ -19,6 +21,15 @@ export default function OrderHistory() {
     async function load() {
       setLoading(true);
       setError('');
+
+      if (isUiDemoEnabled()) {
+        if (!cancelled) {
+          setOrders(UI_DEMO_ORDERS);
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const data = await listMyOrders();
         if (!cancelled) {
@@ -55,14 +66,14 @@ export default function OrderHistory() {
       <ErrorMessage message={error} />
 
       {loading ? (
-        <Spinner label="Loading orders..." />
+        <Spinner label="Loading orders…" />
       ) : orders.length === 0 ? (
         <EmptyState
           title="No orders yet"
           description="When you place an order, it will show up here."
         />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-3">
           {orders.map((order) => (
             <OrderCard key={order.id} order={order} />
           ))}

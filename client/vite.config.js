@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   define: {
     'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || ''),
+    'process.env.VITE_UI_DEMO': JSON.stringify(
+      process.env.VITE_UI_DEMO ?? 'true'
+    ),
   },
   server: {
     port: 5173,

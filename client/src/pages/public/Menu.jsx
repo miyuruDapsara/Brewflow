@@ -4,8 +4,13 @@ import ProductFilters from '../../components/products/ProductFilters';
 import ProductGrid from '../../components/products/ProductGrid';
 import ErrorMessage from '../../components/common/ErrorMessage';
 import Spinner from '../../components/common/Spinner';
+import {
+  getDemoProducts,
+  UI_DEMO_CATEGORIES,
+} from '../../data/uiDemoData';
 import { listCategories } from '../../services/category';
 import { listProducts } from '../../services/product';
+import { isUiDemoEnabled } from '../../utils/uiDemo';
 import { getErrorMessage } from '../../utils/errorHandler';
 
 export default function Menu() {
@@ -20,6 +25,13 @@ export default function Menu() {
     let cancelled = false;
 
     async function loadCategories() {
+      if (isUiDemoEnabled()) {
+        if (!cancelled) {
+          setCategories(UI_DEMO_CATEGORIES);
+        }
+        return;
+      }
+
       try {
         const data = await listCategories();
         if (!cancelled) {
@@ -44,6 +56,15 @@ export default function Menu() {
     async function loadProducts() {
       setLoading(true);
       setError('');
+
+      if (isUiDemoEnabled()) {
+        if (!cancelled) {
+          setProducts(getDemoProducts(selectedCategoryId));
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const data = await listProducts({
           categoryId: selectedCategoryId || undefined,

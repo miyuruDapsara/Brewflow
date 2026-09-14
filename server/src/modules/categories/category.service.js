@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const Category = require('./category.model');
 const Product = require('../products/product.model');
 const ApiError = require('../../utils/ApiError');
+const auditService = require('../audit/audit.service');
+const { AUDIT_ACTIONS, ENTITY_TYPES } = require('../audit/audit.constants');
 
 function toCategory(doc) {
   return doc.toSafeObject();
@@ -33,7 +35,7 @@ async function getNextDisplayOrder() {
   return last ? last.displayOrder + 1 : 0;
 }
 
-async function createCategory(payload) {
+async function createCategory(payload, actorId) {
   const displayOrder =
     payload.displayOrder !== undefined
       ? payload.displayOrder
@@ -47,10 +49,24 @@ async function createCategory(payload) {
     isActive: payload.isActive !== undefined ? payload.isActive : true,
   });
 
-  return toCategory(category);
+  const safe = toCategory(category);
+  if (actorId) {
+    try {
+      await auditService.writeLog({
+        actorId,
+        action: AUDIT_ACTIONS.CATEGORY_CREATED,
+        entityType: ENTITY_TYPES.CATEGORY,
+        entityId: safe.id,
+        details: { name: safe.name },
+      });
+    } catch {
+      /* never fail mutation */
+    }
+  }
+  return safe;
 }
 
-async function updateCategory(id, payload) {
+async function updateCategory(id, payload, actorId) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw ApiError.notFound('Category not found');
   }
@@ -62,10 +78,20 @@ async function updateCategory(id, payload) {
 
   Object.assign(category, payload);
   await category.save();
-  return toCategory(category);
+  const safe = toCategory(category);
+  if (actorId) {
+    auditService.writeLogSafe({
+      actorId,
+      action: AUDIT_ACTIONS.CATEGORY_UPDATED,
+      entityType: ENTITY_TYPES.CATEGORY,
+      entityId: safe.id,
+      details: { name: safe.name },
+    });
+  }
+  return safe;
 }
 
-async function deleteCategory(id) {
+async function deleteCategory(id, actorId) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw ApiError.notFound('Category not found');
   }
@@ -86,7 +112,17 @@ async function deleteCategory(id) {
     );
   }
 
+  const name = category.name;
   await category.deleteOne();
+  if (actorId) {
+    auditService.writeLogSafe({
+      actorId,
+      action: AUDIT_ACTIONS.CATEGORY_DELETED,
+      entityType: ENTITY_TYPES.CATEGORY,
+      entityId: category._id.toString(),
+      details: { name },
+    });
+  }
   return { id: category._id.toString() };
 }
 

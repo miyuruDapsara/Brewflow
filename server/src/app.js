@@ -12,6 +12,9 @@ const productRoutes = require('./modules/products/product.routes');
 const orderRoutes = require('./modules/orders/order.routes');
 const adminOrderRoutes = require('./modules/orders/order.admin.routes');
 const paymentRoutes = require('./modules/payments/payment.routes');
+const inventoryRoutes = require('./modules/inventory/inventory.routes');
+const reportRoutes = require('./modules/reports/report.routes');
+const auditRoutes = require('./modules/audit/audit.routes');
 
 const app = express();
 
@@ -36,6 +39,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin/orders', adminOrderRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/audit', auditRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

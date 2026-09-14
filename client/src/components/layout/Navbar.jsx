@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useCart from '../../hooks/useCart';
 import { APP_NAME, ROLES } from '../../utils/constants';
+import { getDashboardPath } from '../../utils/roleHome';
 import Button from '../common/Button';
 import CartBadge from '../cart/CartBadge';
 import CartDrawer from '../cart/CartDrawer';
@@ -11,7 +12,7 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const { itemCount } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const isStaff =
+  const isOps =
     user?.role === ROLES.STAFF || user?.role === ROLES.MANAGER;
 
   const linkClass = ({ isActive }) =>
@@ -35,15 +36,18 @@ export default function Navbar() {
           <NavLink to="/" className={linkClass} end>
             Home
           </NavLink>
+          <NavLink to="/about" className={linkClass}>
+            About
+          </NavLink>
           <NavLink to="/menu" className={linkClass}>
             Menu
           </NavLink>
           <CartBadge count={itemCount} onClick={() => setDrawerOpen(true)} />
           {isAuthenticated ? (
             <>
-              {isStaff ? (
-                <NavLink to="/staff" className={linkClass}>
-                  Staff
+              {isOps ? (
+                <NavLink to={getDashboardPath(user)} className={linkClass}>
+                  Dashboard
                 </NavLink>
               ) : null}
               <NavLink to="/orders" className={linkClass}>

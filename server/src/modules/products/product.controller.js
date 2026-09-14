@@ -14,17 +14,27 @@ async function getById(req, res) {
 }
 
 async function create(req, res) {
-  const product = await productService.createProduct(req.body);
+  const product = await productService.createProduct(
+    req.body,
+    req.user?.id
+  );
   return sendSuccess(res, { product }, 201);
 }
 
 async function update(req, res) {
-  const product = await productService.updateProduct(req.params.id, req.body);
+  const product = await productService.updateProduct(
+    req.params.id,
+    req.body,
+    req.user?.id
+  );
   return sendSuccess(res, { product });
 }
 
 async function remove(req, res) {
-  const result = await productService.deleteProduct(req.params.id);
+  const result = await productService.deleteProduct(
+    req.params.id,
+    req.user?.id
+  );
   return sendSuccess(res, result);
 }
 
