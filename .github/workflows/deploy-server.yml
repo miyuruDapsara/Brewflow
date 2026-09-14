@@ -9,24 +9,24 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Render deploy hook
+      - name: Check Railway deploy hook
         id: check
         env:
-          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RAILWAY_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_DEPLOY_HOOK_URL }}
         run: |
-          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+          if [ -z "$RAILWAY_DEPLOY_HOOK_URL" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "Deploy skipped: set RENDER_DEPLOY_HOOK_URL (and optional SERVER_HEALTH_URL) in Phase 19."
+            echo "Deploy skipped: set RAILWAY_DEPLOY_HOOK_URL (and optional SERVER_HEALTH_URL) in Phase 19."
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Trigger Render deploy
+      - name: Trigger Railway deploy
         if: steps.check.outputs.skip == 'false'
         env:
-          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RAILWAY_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_DEPLOY_HOOK_URL }}
         run: |
-          curl --fail --show-error --silent --request POST "$RENDER_DEPLOY_HOOK_URL"
+          curl --fail --show-error --silent --request POST "$RAILWAY_DEPLOY_HOOK_URL"
 
       - name: Health check
         if: steps.check.outputs.skip == 'false'
